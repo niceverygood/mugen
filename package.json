@@ -1,0 +1,13 @@
+{
+  "name": "mugen-cad",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter server dev\" \"pnpm --filter client dev\"",
+    "build": "pnpm --filter shared build && pnpm --filter server build && pnpm --filter client build",
+    "db:migrate": "pnpm --filter server prisma:migrate",
+    "db:seed": "pnpm --filter server prisma:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

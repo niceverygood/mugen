@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  password  String
+  name      String
+  role      Role      @default(STAFF)
+  createdAt DateTime  @default(now())
+  projects  Project[]
+  drawings  Drawing[]
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  VIEWER
+}
+
+model Preset {
+  id          Int       @id @default(autoincrement())
+  name        String
+  clientName  String
+  studSpacing Int
+  wallType    String
+  maxSpan     Int
+  notes       String?
+  settings    String    @default("{}")
+  createdAt   DateTime  @default(now())
+  projects    Project[]
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  name        String
+  clientName  String
+  status      Status    @default(IN_PROGRESS)
+  floors      Int       @default(2)
+  roofType    String    @default("gabled")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById Int
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  presetId    Int?
+  preset      Preset?   @relation(fields: [presetId], references: [id])
+  drawings    Drawing[]
+}
+
+enum Status {
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+}
+
+model Drawing {
+  id          Int         @id @default(autoincrement())
+  projectId   Int
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type        DrawingType
+  fileName    String
+  filePath    String
+  version     Int         @default(1)
+  generatedAt DateTime?
+  createdById Int
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  createdAt   DateTime    @default(now())
+  parentId    Int?
+  parent      Drawing?    @relation("versions", fields: [parentId], references: [id])
+  children    Drawing[]   @relation("versions")
+}
+
+enum DrawingType {
+  ARCHITECTURAL
+  STRUCTURAL
+  MANUAL
+}

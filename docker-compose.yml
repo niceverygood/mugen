@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mugen_cad
+      POSTGRES_USER: mugen
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mugen_secure_2024}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mugen -d mugen_cad"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: .
+      dockerfile: packages/server/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://mugen:${DB_PASSWORD:-mugen_secure_2024}@postgres:5432/mugen_cad
+      JWT_SECRET: ${JWT_SECRET:-mugen-cad-jwt-secret-prod-2024}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-mugen-cad-refresh-secret-prod-2024}
+      UPLOAD_DIR: /data/uploads
+      PORT: "3001"
+      NODE_ENV: production
+    volumes:
+      - upload_data:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+
+  client:
+    build:
+      context: .
+      dockerfile: packages/client/Dockerfile
+    ports:
+      - "3000:80"
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - server
+      - client
+
+volumes:
+  postgres_data:
+  upload_data:
