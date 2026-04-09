@@ -1,10 +1,12 @@
 import { useEditorStore } from '../../store/editorStore';
+import { useT } from '../../store/langStore';
 
 export default function ErrorPanel() {
+  const t = useT();
   const { manualErrors } = useEditorStore();
 
   if (manualErrors.length === 0) {
-    return <div style={{ color: '#30363d', fontSize: 11, padding: '8px 2px' }}>エラーなし</div>;
+    return <div style={{ color: '#30363d', fontSize: 11, padding: '8px 2px' }}>{t('error.no_errors')}</div>;
   }
 
   return (

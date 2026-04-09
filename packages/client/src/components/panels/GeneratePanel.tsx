@@ -1,4 +1,5 @@
 import { useEditorStore } from '../../store/editorStore';
+import { useT } from '../../store/langStore';
 import { GEN_LAYER_CFG, LAYER_ORDER } from '@mugen/shared';
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function GeneratePanel({ presets, onGenerate }: Props) {
+  const t = useT();
   const {
     dxfData, activePresetId, setActivePresetId, genSettings, setGenSettings,
     isGenerating, genDone, generatedLayers, genVisible, setGenVisible,
@@ -26,17 +28,17 @@ export default function GeneratePanel({ presets, onGenerate }: Props) {
 
   return (
     <>
-      <div style={S.sL}>設定</div>
+      <div style={S.sL}>{t('gen.settings')}</div>
 
       {!activePresetId && (
         <div style={{ background: '#1f1a0a', border: '1px solid #4a3b0a', borderRadius: 5, padding: '6px 8px', fontSize: 11, color: '#e3b341', marginBottom: 8 }}>
-          まず下のプリセットを選択してください
+          {t('gen.select_preset')}
         </div>
       )}
 
       {/* Presets */}
       <div style={{ marginBottom: 10 }}>
-        <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 4 }}>プリセット</div>
+        <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 4 }}>{t('tab.presets')}</div>
         {presets.map(p => (
           <button key={p.id}
             onClick={() => setActivePresetId(activePresetId === p.id ? null : p.id)}
@@ -48,8 +50,8 @@ export default function GeneratePanel({ presets, onGenerate }: Props) {
 
       {/* Settings */}
       <div style={{ marginBottom: 10 }}>
-        <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 4 }}>階数</div>
-        {([['1階', 1], ['2階', 2]] as [string, number][]).map(([lbl, val]) => (
+        <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 4 }}>{t('gen.floors')}</div>
+        {([[t('gen.floor_1'), 1], [t('gen.floor_2'), 2]] as [string, number][]).map(([lbl, val]) => (
           <button key={val} onClick={() => setGenSettings({ ...genSettings, floors: val })}
             style={{ ...S.btn(genSettings.floors === val), marginRight: 4 }}>
             {lbl}
@@ -58,8 +60,8 @@ export default function GeneratePanel({ presets, onGenerate }: Props) {
       </div>
 
       <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 4 }}>屋根タイプ</div>
-        {([['切妻', 'gabled'], ['寄棟', 'hip']] as [string, string][]).map(([lbl, val]) => (
+        <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 4 }}>{t('gen.roof_type')}</div>
+        {([[t('gen.roof_gabled'), 'gabled'], [t('gen.roof_hip'), 'hip']] as [string, string][]).map(([lbl, val]) => (
           <button key={val} onClick={() => setGenSettings({ ...genSettings, roofType: val })}
             style={{ ...S.btn(genSettings.roofType === val), marginRight: 4 }}>
             {lbl}
@@ -79,18 +81,18 @@ export default function GeneratePanel({ presets, onGenerate }: Props) {
           fontSize: 12, fontWeight: 700, letterSpacing: 1,
           opacity: dxfData && activePresetId ? 1 : 0.5, marginBottom: 12,
         }}>
-        {isGenerating ? '生成中...' : '構造図面自動生成'}
+        {isGenerating ? t('gen.generating') : t('gen.generate')}
       </button>
 
       {/* Generated layer toggles */}
       {genDone && (
         <>
-          <div style={S.sL}>生成された図面レイヤー</div>
+          <div style={S.sL}>{t('gen.layers_title')}</div>
           <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
             <button onClick={() => setGenVisible(Object.fromEntries(LAYER_ORDER.map(k => [k, true])))}
-              style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>全表示</button>
+              style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>{t('gen.show_all')}</button>
             <button onClick={() => setGenVisible(Object.fromEntries(LAYER_ORDER.map(k => [k, false])))}
-              style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>全非表示</button>
+              style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>{t('gen.hide_all')}</button>
           </div>
           {LAYER_ORDER.filter(k => generatedLayers[k]).map(k => {
             const cfg = GEN_LAYER_CFG[k];

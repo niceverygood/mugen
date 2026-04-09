@@ -2,14 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEditorStore } from '../store/editorStore';
 import { api } from '../lib/api';
+import { useT } from '../store/langStore';
 import { parseDXF, LAYER_ORDER, GEN_LAYER_CFG } from '@mugen/shared';
 import DXFCanvas from '../components/canvas/DXFCanvas';
 import GeneratePanel from '../components/panels/GeneratePanel';
 import LayerPanel from '../components/panels/LayerPanel';
 import PresetPanel from '../components/panels/PresetPanel';
 import ErrorPanel from '../components/panels/ErrorPanel';
+import LangSwitch from '../components/ui/LangSwitch';
 
 export default function Editor() {
+  const t = useT();
   const { projectId, drawingId } = useParams<{ projectId: string; drawingId: string }>();
   const navigate = useNavigate();
   const [tab, setTab] = useState<'gen' | 'layers' | 'presets' | 'errors'>('gen');
@@ -119,7 +122,7 @@ export default function Editor() {
     sL: { fontSize: 10, color: '#8b949e', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 6 },
   };
 
-  if (loading) return <div style={{ ...S.root, alignItems: 'center', justifyContent: 'center' }}>読み込み中...</div>;
+  if (loading) return <div style={{ ...S.root, alignItems: 'center', justifyContent: 'center' }}>{t('common.loading')}</div>;
 
   return (
     <div style={S.root}>
@@ -127,19 +130,20 @@ export default function Editor() {
       <div style={S.hdr}>
         <button onClick={() => navigate(`/projects/${projectId}`)} style={{ ...S.btn(false), padding: '3px 8px' }}>←</button>
         <span style={{ fontWeight: 800, fontSize: 14, color: '#2f81f7', letterSpacing: 2 }}>MUGEN</span>
-        <span style={{ fontSize: 10, color: '#30363d' }}>構造図面自動生成</span>
+        <span style={{ fontSize: 10, color: '#30363d' }}>{t('app.subtitle')}</span>
         <div style={{ width: 1, height: 22, background: '#21262d' }} />
-        {([['pan', '\u270b', '移動'], ['wall', '\u25ac', '壁体']] as [string, string, string][]).map(([id, ico, lbl]) => (
+        {([['pan', '\u270b', t('editor.tool_pan')], ['wall', '\u25ac', t('editor.tool_wall')]] as [string, string, string][]).map(([id, ico, lbl]) => (
           <button key={id} onClick={() => setTool(id as any)} style={S.btn(tool === id)}>{ico} {lbl}</button>
         ))}
         <div style={{ flex: 1 }} />
-        {hasGen && <span style={{ fontSize: 11, color: '#3fb950' }}>✓ 生成完了 ({totalGenEntities.toLocaleString()}個エンティティ)</span>}
+        {hasGen && <span style={{ fontSize: 11, color: '#3fb950' }}>✓ {t('editor.gen_complete')} ({totalGenEntities.toLocaleString()}{t('editor.entities')})</span>}
+        <LangSwitch />
         <label style={{ ...S.btn(false), cursor: 'pointer' }}>
-          DXF開く
+          {t('editor.open_dxf')}
           <input type="file" accept=".dxf,.DXF" onChange={handleFile} style={{ display: 'none' }} />
         </label>
         <button disabled={!hasGen && !manualElements.length} style={S.btn(false, !hasGen && !manualElements.length)}>
-          DXFエクスポート
+          {t('editor.export_dxf')}
         </button>
       </div>
 
@@ -147,7 +151,7 @@ export default function Editor() {
         {/* LEFT PANEL */}
         <div style={S.left}>
           <div style={S.tabs}>
-            {([['gen', '自動生成'], ['layers', 'レイヤー'], ['presets', 'プリセット'], ['errors', 'エラー']] as [string, string][]).map(([id, lbl]) => (
+            {([['gen', t('tab.generate')], ['layers', t('tab.layers')], ['presets', t('tab.presets')], ['errors', t('tab.errors')]] as [string, string][]).map(([id, lbl]) => (
               <button key={id} onClick={() => setTab(id as any)}
                 style={{
                   flex: 1, padding: '8px 0', fontFamily: 'inherit',
@@ -175,7 +179,7 @@ export default function Editor() {
         <div style={S.right}>
           {/* Legend */}
           <div style={{ marginBottom: 12 }}>
-            <div style={S.sL}>図面凡例</div>
+            <div style={S.sL}>{t('right.legend')}</div>
             {hasGen ? LAYER_ORDER.filter(k => generatedLayers[k] && genVisible[k]).map(k => {
               const cfg = GEN_LAYER_CFG[k];
               return (
@@ -185,14 +189,14 @@ export default function Editor() {
                 </div>
               );
             }) : (
-              <div style={{ fontSize: 11, color: '#30363d' }}>自動生成後に表示されます</div>
+              <div style={{ fontSize: 11, color: '#30363d' }}>{t('right.after_gen')}</div>
             )}
           </div>
 
           {/* Stats */}
           {hasGen && (
             <div style={{ marginBottom: 12 }}>
-              <div style={S.sL}>生成統計</div>
+              <div style={S.sL}>{t('right.stats')}</div>
               {LAYER_ORDER.filter(k => generatedLayers[k]).map(k => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 6px', marginBottom: 2, borderRadius: 4, background: '#21262d' }}>
                   <span style={{ fontSize: 10, color: '#8b949e' }}>{k}</span>
@@ -200,7 +204,7 @@ export default function Editor() {
                 </div>
               ))}
               <div style={{ marginTop: 4, padding: '4px 6px', borderRadius: 4, background: '#1f4878', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 10, color: '#79c0ff', fontWeight: 700 }}>総エンティティ</span>
+                <span style={{ fontSize: 10, color: '#79c0ff', fontWeight: 700 }}>{t('right.total_entities')}</span>
                 <span style={{ fontSize: 10, color: '#79c0ff', fontWeight: 700 }}>{totalGenEntities.toLocaleString()}</span>
               </div>
             </div>
@@ -208,13 +212,13 @@ export default function Editor() {
 
           {/* Workflow */}
           <div style={{ marginBottom: 10 }}>
-            <div style={S.sL}>作業フロー</div>
+            <div style={S.sL}>{t('right.workflow')}</div>
             {[
-              [hasGen || !!dxfData ? '#3fb950' : '#30363d', '① DXFアップロード', !!dxfData],
-              [activePresetId ? '#3fb950' : '#30363d', '② プリセット選択', !!activePresetId],
-              [hasGen ? '#3fb950' : '#30363d', '③ 構造図面自動生成', hasGen],
-              ['#30363d', '④ 検討 / 修正', false],
-              ['#30363d', '⑤ DXFエクスポート → JW CAD', false],
+              [hasGen || !!dxfData ? '#3fb950' : '#30363d', t('right.step1'), !!dxfData],
+              [activePresetId ? '#3fb950' : '#30363d', t('right.step2'), !!activePresetId],
+              [hasGen ? '#3fb950' : '#30363d', t('right.step3'), hasGen],
+              ['#30363d', t('right.step4'), false],
+              ['#30363d', t('right.step5'), false],
             ].map(([color, label, done], i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px', marginBottom: 2, borderRadius: 4, background: done ? '#0d2a14' : 'transparent' }}>
                 <span style={{ color: color as string, fontSize: 11, width: 16 }}>{done ? '\u2713' : '\u25cb'}</span>

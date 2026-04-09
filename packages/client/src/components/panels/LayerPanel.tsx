@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import { useEditorStore } from '../../store/editorStore';
+import { useT } from '../../store/langStore';
 import { PALETTE } from '@mugen/shared';
 
 export default function LayerPanel() {
+  const t = useT();
   const { dxfData, visibleLayers, setVisibleLayers, toggleLayer, activeLayer, setActiveLayer } = useEditorStore();
 
   const layerColors = useMemo(() => {
@@ -10,15 +12,15 @@ export default function LayerPanel() {
     return Object.fromEntries(dxfData.layers.map((l, i) => [l, PALETTE[i % PALETTE.length]]));
   }, [dxfData]);
 
-  if (!dxfData) return <div style={{ color: '#30363d', fontSize: 11, padding: '8px 2px' }}>DXFアップロード後に表示されます</div>;
+  if (!dxfData) return <div style={{ color: '#30363d', fontSize: 11, padding: '8px 2px' }}>{t('layer.after_upload')}</div>;
 
   return (
     <>
       <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
         <button onClick={() => setVisibleLayers(new Set(dxfData.layers))}
-          style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>全表示</button>
+          style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>{t('layer.show_all')}</button>
         <button onClick={() => setVisibleLayers(new Set())}
-          style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>全非表示</button>
+          style={{ flex: 1, padding: '3px 0', background: 'transparent', border: '1px solid #21262d', color: '#8b949e', borderRadius: 4, cursor: 'pointer', fontSize: 10, fontFamily: 'inherit' }}>{t('layer.hide_all')}</button>
       </div>
       {dxfData.layers.map(layer => {
         const vis = visibleLayers.has(layer);
@@ -39,7 +41,7 @@ export default function LayerPanel() {
         );
       })}
       <div style={{ marginTop: 6, fontSize: 10, color: '#30363d' }}>
-        レイヤー {dxfData.layers.length}個 \u00b7 {dxfData.entities.length.toLocaleString()}個エンティティ
+        {dxfData.layers.length} {t('tab.layers')} \u00b7 {dxfData.entities.length.toLocaleString()} entities
       </div>
     </>
   );
