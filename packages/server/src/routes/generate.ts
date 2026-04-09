@@ -32,13 +32,13 @@ router.post('/', async (req: Request, res: Response) => {
     // Validate inputs
     const drawing = await prisma.drawing.findUnique({ where: { id: drawingId } });
     if (!drawing) {
-      res.status(404).json({ error: '図面が見つかりません' });
+      res.status(404).json({ error: 'DRAWING_NOT_FOUND' });
       return;
     }
 
     const presetData = await prisma.preset.findUnique({ where: { id: presetId } });
     if (!presetData) {
-      res.status(404).json({ error: 'プリセットが見つかりません' });
+      res.status(404).json({ error: 'PRESET_NOT_FOUND' });
       return;
     }
 
@@ -63,7 +63,7 @@ router.post('/', async (req: Request, res: Response) => {
     res.json({ jobId });
   } catch (err) {
     console.error('Generate error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -141,7 +141,7 @@ async function processGeneration(
 router.get('/:jobId/status', (req: Request, res: Response) => {
   const job = jobs.get(req.params.jobId);
   if (!job) {
-    res.status(404).json({ error: 'ジョブが見つかりません' });
+    res.status(404).json({ error: 'JOB_NOT_FOUND' });
     return;
   }
 
@@ -157,7 +157,7 @@ router.get('/:jobId/status', (req: Request, res: Response) => {
 router.get('/:jobId/download', (req: Request, res: Response) => {
   const job = jobs.get(req.params.jobId);
   if (!job || job.status !== 'done' || !job.dxfString) {
-    res.status(404).json({ error: '生成結果が見つかりません' });
+    res.status(404).json({ error: 'GENERATION_RESULT_NOT_FOUND' });
     return;
   }
 

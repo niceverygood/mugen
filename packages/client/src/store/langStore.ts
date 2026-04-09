@@ -133,6 +133,25 @@ const T: Record<string, Record<Lang, string>> = {
 
   // Error
   'error.no_errors': { ko: '에러 없음', ja: 'エラーなし' },
+
+  // Server Error Codes
+  'SERVER_ERROR': { ko: '서버 오류가 발생했습니다', ja: 'サーバーエラー' },
+  'PROJECT_NOT_FOUND': { ko: '프로젝트를 찾을 수 없습니다', ja: 'プロジェクトが見つかりません' },
+  'PERMISSION_DENIED': { ko: '권한이 없습니다', ja: '権限がありません' },
+  'DRAWING_NOT_FOUND': { ko: '도면을 찾을 수 없습니다', ja: '図面が見つかりません' },
+  'FILE_NOT_FOUND': { ko: '파일을 찾을 수 없습니다', ja: 'ファイルが見つかりません' },
+  'DXF_FILE_REQUIRED': { ko: 'DXF 파일이 필요합니다', ja: 'DXFファイルが必要です' },
+  'DXF_ONLY': { ko: 'DXF 파일만 업로드 가능합니다', ja: 'DXFファイルのみアップロード可能です' },
+  'INVALID_TOKEN': { ko: '토큰이 유효하지 않습니다', ja: 'トークンが無効です' },
+  'AUTH_REQUIRED': { ko: '인증이 필요합니다', ja: '認証が必要です' },
+  'REFRESH_TOKEN_REQUIRED': { ko: '리프레시 토큰이 필요합니다', ja: 'リフレッシュトークンが必要です' },
+  'INVALID_REFRESH_TOKEN': { ko: '리프레시 토큰이 유효하지 않습니다', ja: 'リフレッシュトークンが無効です' },
+  'USER_NOT_FOUND': { ko: '사용자를 찾을 수 없습니다', ja: 'ユーザーが見つかりません' },
+  'UPLOAD_FAILED': { ko: '업로드에 실패했습니다', ja: 'アップロードに失敗しました' },
+  'DOWNLOAD_FAILED': { ko: '다운로드에 실패했습니다', ja: 'ダウンロードに失敗しました' },
+  'JOB_NOT_FOUND': { ko: '작업을 찾을 수 없습니다', ja: 'ジョブが見つかりません' },
+  'GENERATION_RESULT_NOT_FOUND': { ko: '생성 결과를 찾을 수 없습니다', ja: '生成結果が見つかりません' },
+  'PRESET_NOT_FOUND': { ko: '프리셋을 찾을 수 없습니다', ja: 'プリセットが見つかりません' },
 };
 
 export function useT() {

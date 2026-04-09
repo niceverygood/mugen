@@ -20,7 +20,7 @@ declare global {
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
-    res.status(401).json({ error: '認証が必要です (Authentication required)' });
+    res.status(401).json({ error: 'AUTH_REQUIRED' });
     return;
   }
 
@@ -30,18 +30,18 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
     req.user = payload;
     next();
   } catch {
-    res.status(401).json({ error: 'トークンが無効です (Invalid token)' });
+    res.status(401).json({ error: 'INVALID_TOKEN' });
   }
 }
 
 export function requireRole(...roles: string[]) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      res.status(401).json({ error: '認証が必要です' });
+      res.status(401).json({ error: 'AUTH_REQUIRED' });
       return;
     }
     if (!roles.includes(req.user.role)) {
-      res.status(403).json({ error: '権限がありません (Insufficient permissions)' });
+      res.status(403).json({ error: 'PERMISSION_DENIED' });
       return;
     }
     next();

@@ -57,23 +57,34 @@ export default function Editor() {
       });
 
       // Poll for completion
+      let attempts = 0;
       const poll = async () => {
-        const status = await api.getGenerateStatus(jobId);
-        if (status.status === 'done' && status.layers) {
-          setGeneratedLayers(status.layers);
-          const vis: Record<string, boolean> = {};
-          Object.keys(status.layers).forEach(k => { vis[k] = true; });
-          setGenVisible(vis);
-          setGenDone(true);
-          setIsGenerating(false);
-        } else if (status.status === 'error') {
-          console.error('Generation error:', status.error);
-          setIsGenerating(false);
-        } else {
-          setTimeout(poll, 500);
+        attempts++;
+        try {
+          const status = await api.getGenerateStatus(jobId);
+          if (status.status === 'done' && status.layers) {
+            setGeneratedLayers(status.layers);
+            const vis: Record<string, boolean> = {};
+            Object.keys(status.layers).forEach(k => { vis[k] = true; });
+            setGenVisible(vis);
+            setGenDone(true);
+            setIsGenerating(false);
+          } else if (status.status === 'error') {
+            console.error('Generation error:', status.error);
+            setIsGenerating(false);
+          } else if (attempts > 60) {
+            console.error('Generation timeout');
+            setIsGenerating(false);
+          } else {
+            setTimeout(poll, 1000);
+          }
+        } catch (pollErr) {
+          console.error('Poll error:', pollErr);
+          if (attempts > 3) setIsGenerating(false);
+          else setTimeout(poll, 2000);
         }
       };
-      poll();
+      setTimeout(poll, 1500); // Give server time to process
     } catch (err) {
       console.error(err);
       setIsGenerating(false);

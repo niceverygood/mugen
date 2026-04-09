@@ -42,7 +42,7 @@ router.post('/login', async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -51,7 +51,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-      res.status(400).json({ error: 'リフレッシュトークンが必要です' });
+      res.status(400).json({ error: 'REFRESH_TOKEN_REQUIRED' });
       return;
     }
 
@@ -61,7 +61,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
 
     res.json({ accessToken });
   } catch {
-    res.status(401).json({ error: 'リフレッシュトークンが無効です' });
+    res.status(401).json({ error: 'INVALID_REFRESH_TOKEN' });
   }
 });
 
@@ -73,13 +73,13 @@ router.get('/me', authMiddleware, async (req: Request, res: Response) => {
       select: { id: true, username: true, name: true, role: true, createdAt: true },
     });
     if (!user) {
-      res.status(404).json({ error: 'ユーザーが見つかりません' });
+      res.status(404).json({ error: 'USER_NOT_FOUND' });
       return;
     }
     res.json(user);
   } catch (err) {
     console.error('Get me error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 

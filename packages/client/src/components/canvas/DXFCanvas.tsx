@@ -36,7 +36,7 @@ export default function DXFCanvas() {
 
   const {
     worldPos, drawing, isPanning, setDrawing,
-    handleMouseDown, handleMouseMove, handleMouseUp, handleWheel, handleRightClick,
+    handleMouseDown, handleMouseMove, handleMouseUp, handleRightClick,
   } = useDrawingTools(canvasRef, canvasToWorld);
 
   // Key events
@@ -209,7 +209,7 @@ export default function DXFCanvas() {
 
   return (
     <div ref={containerRef} style={{ flex: 1, position: 'relative', overflow: 'hidden' }}
-      onWheel={handleWheel} onContextMenu={handleRightClick}>
+      onContextMenu={handleRightClick}>
       <canvas
         ref={canvasRef}
         style={{ display: 'block', cursor: tool === 'pan' ? (isPanning ? 'grabbing' : 'grab') : 'crosshair' }}

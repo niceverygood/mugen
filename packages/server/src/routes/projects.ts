@@ -35,7 +35,7 @@ router.get('/', async (req: Request, res: Response) => {
     res.json({ projects, total, page: parseInt(page as string), limit: take });
   } catch (err) {
     console.error('Get projects error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -60,7 +60,7 @@ router.post('/', async (req: Request, res: Response) => {
     res.status(201).json(project);
   } catch (err) {
     console.error('Create project error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -81,20 +81,20 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
 
     if (!project) {
-      res.status(404).json({ error: 'プロジェクトが見つかりません' });
+      res.status(404).json({ error: 'PROJECT_NOT_FOUND' });
       return;
     }
 
     // STAFF can only access their own projects
     if (req.user!.role === 'STAFF' && project.createdById !== req.user!.userId) {
-      res.status(403).json({ error: '権限がありません' });
+      res.status(403).json({ error: 'PERMISSION_DENIED' });
       return;
     }
 
     res.json(project);
   } catch (err) {
     console.error('Get project error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -104,11 +104,11 @@ router.put('/:id', async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     const existing = await prisma.project.findUnique({ where: { id } });
     if (!existing) {
-      res.status(404).json({ error: 'プロジェクトが見つかりません' });
+      res.status(404).json({ error: 'PROJECT_NOT_FOUND' });
       return;
     }
     if (req.user!.role === 'STAFF' && existing.createdById !== req.user!.userId) {
-      res.status(403).json({ error: '権限がありません' });
+      res.status(403).json({ error: 'PERMISSION_DENIED' });
       return;
     }
 
@@ -127,7 +127,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     res.json(project);
   } catch (err) {
     console.error('Update project error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -139,7 +139,7 @@ router.delete('/:id', requireRole('ADMIN'), async (req: Request, res: Response) 
     res.json({ success: true });
   } catch (err) {
     console.error('Delete project error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 

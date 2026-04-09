@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ManualWall } from '@mugen/shared';
 import { useEditorStore } from '../../store/editorStore';
 
@@ -57,10 +57,21 @@ export function useDrawingTools(
     panRef.current = null;
   }, []);
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault();
-    setZoom(z => z * (e.deltaY > 0 ? 0.88 : 1.13));
-  }, [setZoom]);
+  // Use native event listener for wheel to avoid passive event listener issue
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    if (!parent) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      useEditorStore.getState().setZoom(z => z * (e.deltaY > 0 ? 0.88 : 1.13));
+    };
+
+    parent.addEventListener('wheel', onWheel, { passive: false });
+    return () => parent.removeEventListener('wheel', onWheel);
+  }, [canvasRef]);
 
   const handleRightClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -75,7 +86,6 @@ export function useDrawingTools(
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
-    handleWheel,
     handleRightClick,
   };
 }

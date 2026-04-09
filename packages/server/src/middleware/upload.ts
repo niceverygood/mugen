@@ -29,7 +29,7 @@ export const upload = multer({
     if (ext === '.dxf') {
       cb(null, true);
     } else {
-      cb(new Error('DXFファイルのみアップロード可能です (.dxf only)'));
+      cb(new Error('DXF_ONLY'));
     }
   },
 });

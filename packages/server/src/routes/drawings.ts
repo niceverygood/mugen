@@ -15,13 +15,13 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
     const projectId = parseInt(req.params.id);
     const file = req.file;
     if (!file) {
-      res.status(400).json({ error: 'DXFファイルが必要です' });
+      res.status(400).json({ error: 'DXF_FILE_REQUIRED' });
       return;
     }
 
     const project = await prisma.project.findUnique({ where: { id: projectId } });
     if (!project) {
-      res.status(404).json({ error: 'プロジェクトが見つかりません' });
+      res.status(404).json({ error: 'PROJECT_NOT_FOUND' });
       return;
     }
 
@@ -38,7 +38,7 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
     res.status(201).json(drawing);
   } catch (err) {
     console.error('Upload error:', err);
-    res.status(500).json({ error: 'アップロードに失敗しました' });
+    res.status(500).json({ error: 'UPLOAD_FAILED' });
   }
 });
 
@@ -49,13 +49,13 @@ router.get('/:drawId', async (req: Request, res: Response) => {
     const drawing = await prisma.drawing.findUnique({ where: { id: drawId } });
 
     if (!drawing) {
-      res.status(404).json({ error: '図面が見つかりません' });
+      res.status(404).json({ error: 'DRAWING_NOT_FOUND' });
       return;
     }
 
     const filePath = drawing.filePath;
     if (!fs.existsSync(filePath)) {
-      res.status(404).json({ error: 'ファイルが見つかりません' });
+      res.status(404).json({ error: 'FILE_NOT_FOUND' });
       return;
     }
 
@@ -84,7 +84,7 @@ router.get('/:drawId', async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error('Get drawing error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -95,19 +95,19 @@ router.get('/:drawId/download', async (req: Request, res: Response) => {
     const drawing = await prisma.drawing.findUnique({ where: { id: drawId } });
 
     if (!drawing) {
-      res.status(404).json({ error: '図面が見つかりません' });
+      res.status(404).json({ error: 'DRAWING_NOT_FOUND' });
       return;
     }
 
     if (!fs.existsSync(drawing.filePath)) {
-      res.status(404).json({ error: 'ファイルが見つかりません' });
+      res.status(404).json({ error: 'FILE_NOT_FOUND' });
       return;
     }
 
     res.download(drawing.filePath, drawing.fileName);
   } catch (err) {
     console.error('Download error:', err);
-    res.status(500).json({ error: 'ダウンロードに失敗しました' });
+    res.status(500).json({ error: 'DOWNLOAD_FAILED' });
   }
 });
 

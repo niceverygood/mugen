@@ -12,7 +12,7 @@ router.get('/', async (_req: Request, res: Response) => {
     res.json(presets);
   } catch (err) {
     console.error('Get presets error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -26,7 +26,7 @@ router.post('/', requireRole('ADMIN'), async (req: Request, res: Response) => {
     res.status(201).json(preset);
   } catch (err) {
     console.error('Create preset error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -50,7 +50,7 @@ router.put('/:id', requireRole('ADMIN'), async (req: Request, res: Response) => 
     res.json(preset);
   } catch (err) {
     console.error('Update preset error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
@@ -62,7 +62,7 @@ router.delete('/:id', requireRole('ADMIN'), async (req: Request, res: Response) 
     res.json({ success: true });
   } catch (err) {
     console.error('Delete preset error:', err);
-    res.status(500).json({ error: 'サーバーエラー' });
+    res.status(500).json({ error: 'SERVER_ERROR' });
   }
 });
 
