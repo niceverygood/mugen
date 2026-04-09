@@ -229,8 +229,7 @@ export default function Editor() {
 
           {/* Shortcuts */}
           <div style={{ marginTop: 'auto', padding: 8, background: '#0d1117', borderRadius: 6, border: '1px solid #21262d', fontSize: 10, color: '#30363d', lineHeight: 1.9 }}>
-            <div>\u2318Z 元に戻す \u00b7 ESC キャンセル</div>
-            <div>右クリック \u2192 作図取消</div>
+            {t('right.shortcuts') || '⌘Z 실행취소 · ESC 취소\n우클릭 → 작도 취소'}
           </div>
         </div>
       </div>

@@ -21,7 +21,10 @@ export default function Login() {
       await login(username, password);
       navigate('/');
     } catch (err: any) {
-      setError(err.message || t('auth.login_failed'));
+      const msg = err.message || 'auth.login_failed';
+      // Translate server error codes
+      const translated = t(msg);
+      setError(translated !== msg ? translated : t('auth.login_failed'));
     } finally {
       setLoading(false);
     }

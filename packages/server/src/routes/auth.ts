@@ -14,19 +14,19 @@ router.post('/login', async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
-      res.status(400).json({ error: 'ユーザー名とパスワードが必要です' });
+      res.status(400).json({ error: 'CREDENTIALS_REQUIRED' });
       return;
     }
 
     const user = await prisma.user.findUnique({ where: { username } });
     if (!user) {
-      res.status(401).json({ error: 'ユーザー名またはパスワードが正しくありません' });
+      res.status(401).json({ error: 'INVALID_CREDENTIALS' });
       return;
     }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      res.status(401).json({ error: 'ユーザー名またはパスワードが正しくありません' });
+      res.status(401).json({ error: 'INVALID_CREDENTIALS' });
       return;
     }
 

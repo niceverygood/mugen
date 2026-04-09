@@ -34,6 +34,8 @@ const T: Record<string, Record<Lang, string>> = {
   'auth.logging_in': { ko: '로그인 중...', ja: 'ログイン中...' },
   'auth.logout': { ko: '로그아웃', ja: 'ログアウト' },
   'auth.login_failed': { ko: '로그인에 실패했습니다', ja: 'ログインに失敗しました' },
+  'CREDENTIALS_REQUIRED': { ko: '사용자명과 비밀번호를 입력하세요', ja: 'ユーザー名とパスワードが必要です' },
+  'INVALID_CREDENTIALS': { ko: '사용자명 또는 비밀번호가 올바르지 않습니다', ja: 'ユーザー名またはパスワードが正しくありません' },
 
   // Dashboard
   'dashboard.projects': { ko: '프로젝트', ja: 'プロジェクト' },
@@ -125,6 +127,9 @@ const T: Record<string, Record<Lang, string>> = {
   'canvas.gen_hint': { ko: '의장도면 DXF를 업로드하면\n구조도면을 자동 생성합니다', ja: '意匠図面DXFをアップロードすると\n構造図面を自動生成します' },
   'canvas.preset_hint': { ko: '왼쪽에서 프리셋 선택 → "자동생성" 클릭', ja: '左パネルでプリセット選択 → "自動生成" をクリック' },
   'canvas.highlight': { ko: '강조표시', ja: '強調表示' },
+
+  // Shortcuts
+  'right.shortcuts': { ko: '⌘Z 실행취소 · ESC 취소\n우클릭 → 작도 취소', ja: '⌘Z 元に戻す · ESC キャンセル\n右クリック → 作図取消' },
 
   // Error
   'error.no_errors': { ko: '에러 없음', ja: 'エラーなし' },

@@ -2,10 +2,12 @@ import { useRef, useEffect, useMemo } from 'react';
 import { useEditorStore } from '../../store/editorStore';
 import { useTransform } from './useTransform';
 import { useDrawingTools } from './useDrawingTools';
+import { useT } from '../../store/langStore';
 import { aciToHex, GEN_LAYER_CFG, LAYER_ORDER, PALETTE } from '@mugen/shared';
 import type { Transform } from './useTransform';
 
 export default function DXFCanvas() {
+  const t = useT();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -92,7 +94,7 @@ export default function DXFCanvas() {
       ctx.fillStyle = '#30363d';
       ctx.font = 'bold 14px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('DXF \u30d5\u30a1\u30a4\u30eb\u3092\u30a2\u30c3\u30d7\u30ed\u30fc\u30c9\u3057\u3066\u304f\u3060\u3055\u3044', W / 2, H / 2 - 14);
+      ctx.fillText(t('canvas.upload_prompt'), W / 2, H / 2 - 14);
       ctx.textAlign = 'left';
       return;
     }
@@ -201,7 +203,7 @@ export default function DXFCanvas() {
       ctx.globalAlpha = 1;
     }
   }, [dxfData, zoom, pan, visibleLayers, activeLayer, layerColors, manualElements,
-    drawing, worldPos, manualErrors, generatedLayers, genVisible, selectedGenLayer, getTransform]);
+    drawing, worldPos, manualErrors, generatedLayers, genVisible, selectedGenLayer, getTransform, t]);
 
   const hasGen = Object.keys(generatedLayers).length > 0;
 
@@ -249,17 +251,17 @@ export default function DXFCanvas() {
       {/* Hints */}
       {!dxfData && (
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none', textAlign: 'center' }}>
-          <div style={{ fontSize: 12, color: '#30363d' }}>意匠図面DXFをアップロードすると<br />構造図面を自動生成します</div>
+          <div style={{ fontSize: 12, color: '#30363d' }}>{t('canvas.gen_hint').split('\n').map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}</div>
         </div>
       )}
       {dxfData && !hasGen && (
         <div style={{ position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', background: '#1f4878', padding: '5px 16px', borderRadius: 20, fontSize: 11, color: '#79c0ff', border: '1px solid #2f81f7' }}>
-          左パネルでプリセット選択 → "構造図面自動生成" ボタンをクリック
+          {t('canvas.preset_hint')}
         </div>
       )}
       {selectedGenLayer && (
         <div style={{ position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', background: '#21262d', padding: '5px 16px', borderRadius: 20, fontSize: 11, color: '#c9d1d9', border: '1px solid #30363d' }}>
-          強調表示: {GEN_LAYER_CFG[selectedGenLayer]?.label}
+          {t('canvas.highlight')}: {GEN_LAYER_CFG[selectedGenLayer]?.label}
         </div>
       )}
     </div>
