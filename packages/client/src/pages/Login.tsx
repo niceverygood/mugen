@@ -61,6 +61,20 @@ export default function Login() {
         <button type="submit" style={{ ...S.btn, opacity: loading ? 0.6 : 1 }} disabled={loading}>
           {loading ? t('auth.logging_in') : t('auth.login')}
         </button>
+
+        <div style={{ marginTop: 20, borderTop: '1px solid #21262d', paddingTop: 16 }}>
+          <div style={{ fontSize: 10, color: '#30363d', textAlign: 'center', marginBottom: 8 }}>Quick Login</div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button type="button" onClick={async () => { setLoading(true); try { await login('admin', 'Mugen2024!'); navigate('/'); } catch { setError(t('auth.login_failed')); } finally { setLoading(false); } }}
+              style={{ flex: 1, padding: '8px 0', background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Admin
+            </button>
+            <button type="button" onClick={async () => { setLoading(true); try { await login('staff', 'Staff2024!'); navigate('/'); } catch { setError(t('auth.login_failed')); } finally { setLoading(false); } }}
+              style={{ flex: 1, padding: '8px 0', background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, color: '#8b949e', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Staff
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );

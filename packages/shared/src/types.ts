@@ -80,6 +80,7 @@ export interface HAxis {
   x0: number;
   x1: number;
   len: number;
+  isExterior?: boolean;
 }
 
 export interface VAxis {
@@ -87,11 +88,18 @@ export interface VAxis {
   y0: number;
   y1: number;
   len: number;
+  isExterior?: boolean;
 }
 
 export interface Axes {
   hAxes: HAxis[];
   vAxes: VAxis[];
+}
+
+export interface Opening {
+  pos: number;      // position along wall axis (x for h-wall, y for v-wall)
+  width: number;    // opening width in mm
+  type: 'door' | 'window' | 'unknown';
 }
 
 export interface Extents {
