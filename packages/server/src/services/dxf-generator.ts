@@ -16,15 +16,26 @@ function extents(hAxes: HAxis[], vAxes: VAxis[]): Extents {
 
 // ---- Step 1: Extract major structural axes from DXF entities ----
 export function extractAxes(entities: DXFEntity[]): Axes {
+  // First compute bounds to determine building scale
+  const bounds = getBounds(entities);
+  const bW = bounds.x1 - bounds.x0;
+  const bH = bounds.y1 - bounds.y0;
+  const buildingScale = Math.max(bW, bH);
+
+  // Minimum line length: at least 30% of building dimension to be a structural axis
+  const minLen = Math.max(2000, buildingScale * 0.25);
+  // Merge distance: lines within 500mm are likely the same wall
+  const mergeDistance = Math.max(500, buildingScale * 0.03);
+
   const hC: HAxis[] = [];
   const vC: VAxis[] = [];
 
   const processLine = (x1: number, y1: number, x2: number, y2: number) => {
     const len = Math.hypot(x2 - x1, y2 - y1);
-    if (len < 800) return;
+    if (len < minLen) return;
     const dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
-    if (dy / len < 0.15) hC.push({ y: (y1 + y2) / 2, x0: Math.min(x1, x2), x1: Math.max(x1, x2), len });
-    else if (dx / len < 0.15) vC.push({ x: (x1 + x2) / 2, y0: Math.min(y1, y2), y1: Math.max(y1, y2), len });
+    if (dy / len < 0.08) hC.push({ y: (y1 + y2) / 2, x0: Math.min(x1, x2), x1: Math.max(x1, x2), len });
+    else if (dx / len < 0.08) vC.push({ x: (x1 + x2) / 2, y0: Math.min(y1, y2), y1: Math.max(y1, y2), len });
   };
 
   entities.forEach((e: any) => {
@@ -36,7 +47,7 @@ export function extractAxes(entities: DXFEntity[]): Axes {
     }
   });
 
-  const dedup = <T extends { len: number }>(arr: T[], key: keyof T, merge = 200): T[] => {
+  const dedup = <T extends { len: number }>(arr: T[], key: keyof T, merge: number): T[] => {
     if (!arr.length) return [];
     const s = [...arr].sort((a, b) => (a[key] as number) - (b[key] as number));
     const r = [s[0]];
@@ -48,7 +59,23 @@ export function extractAxes(entities: DXFEntity[]): Axes {
     return r;
   };
 
-  return { hAxes: dedup(hC, 'y'), vAxes: dedup(vC, 'x') };
+  let hAxes = dedup(hC, 'y', mergeDistance);
+  let vAxes = dedup(vC, 'x', mergeDistance);
+
+  // Cap axes to reasonable building limits (max ~10 axes per direction)
+  // Keep only the longest ones if too many
+  if (hAxes.length > 10) {
+    hAxes.sort((a, b) => b.len - a.len);
+    hAxes = hAxes.slice(0, 8);
+    hAxes.sort((a, b) => a.y - b.y);
+  }
+  if (vAxes.length > 10) {
+    vAxes.sort((a, b) => b.len - a.len);
+    vAxes = vAxes.slice(0, 8);
+    vAxes.sort((a, b) => a.x - b.x);
+  }
+
+  return { hAxes, vAxes };
 }
 
 // ---- Fallback: synthesize axes from bounding box ----
